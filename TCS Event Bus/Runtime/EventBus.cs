@@ -9,7 +9,7 @@ namespace TCS.EventBus {
         static readonly HashSet<EventBinding<T>> Bindings = new();
         static readonly HashSet<EventBinding<T>> PendingRemovals = new();
         const int CLEANUP_THRESHOLD = 100; // Cleanup after this many events
-        static int s_eventCount;
+        static int sEventCount;
         static readonly CancellationTokenSource CancellationTokenSource = new();
 
         public static void Register(EventBinding<T> binding) {
@@ -21,16 +21,16 @@ namespace TCS.EventBus {
         }
 
         public static async void Raise(T eventInstance) {
-            if (s_eventCount >= CLEANUP_THRESHOLD) {
+            if (sEventCount >= CLEANUP_THRESHOLD) {
                 foreach (EventBinding<T> binding in PendingRemovals) {
                     Bindings.Remove(binding);
                 }
 
                 PendingRemovals.Clear();
-                s_eventCount = 0;
+                sEventCount = 0;
             }
 
-            s_eventCount++;
+            sEventCount++;
 
             int numBindings = Bindings.Count;
 
