@@ -12,13 +12,8 @@ namespace TCS.EventBus {
         static int sEventCount;
         static readonly CancellationTokenSource CancellationTokenSource = new();
 
-        public static void Register(EventBinding<T> binding) {
-            Bindings.Add(binding);
-        }
-
-        public static void Deregister(EventBinding<T> binding) {
-            PendingRemovals.Add(binding);
-        }
+        public static void Register(EventBinding<T> binding) => Bindings.Add(binding);
+        public static void Deregister(EventBinding<T> binding) => PendingRemovals.Add(binding);
 
         public static async void Raise(T eventInstance) {
             if (sEventCount >= CLEANUP_THRESHOLD) {
