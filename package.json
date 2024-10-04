@@ -1,15 +1,9 @@
 {
   "name": "com.tcs.eventbus",
-  "displayName": "Tent City Studio Event Bus",
+  "displayName": "TCS-EventBus",
   "description": "A simple event bus for Unity",
   "version": "1.0.1",
-  "keywords": [
-    "input",
-    "attribute",
-    "inspector",
-    "manager",
-    "editor"
-  ],
+  "keywords": ["input", "attribute", "inspector", "manager", "editor"],
   "category": "Tent City Studio",
   "dependencies": {},
   "author": {
