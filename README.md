@@ -1,91 +1,118 @@
-# 🎨 Tent City Studio Event Bus
 
-![Unity](https://img.shields.io/badge/Unity-2022.3+-black.svg?style=for-the-badge&logo=unity)
-![Contributions welcome](https://img.shields.io/badge/Contributions-Welcome-brightgreen.svg?style=for-the-badge)
-[![Odin Inspector](https://img.shields.io/badge/Odin_Inspector-Required-blue?style=for-the-badge)](https://odininspector.com/)
-
-***
-![Banner Image](https://via.placeholder.com/1000x300.png?text=assets+TCS+Event+Bus+for+Unity)
-***
-
-![GitHub Forks](https://img.shields.io/github/forks/Ddemon26/TCS-Event-Bus)
-![GitHub Contributors](https://img.shields.io/github/contributors/Ddemon26/TCS-Event-Bus)
-
-![GitHub Stars](https://img.shields.io/github/stars/Ddemon26/TCS-Event-Bus)
-![GitHub Repo Size](https://img.shields.io/github/repo-size/Ddemon26/TCS-Event-Bus)
+# TCS Event Bus
 
 [![Join our Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?logo=discord&logoColor=white)](https://discord.gg/knwtcq3N2a)
 ![Discord](https://img.shields.io/discord/1047781241010794506)
 
-![GitHub Issues](https://img.shields.io/github/issues/Ddemon26/TCS-Event-Bus)
-![GitHub Pull Requests](https://img.shields.io/github/issues-pr/Ddemon26/TCS-Event-Bus)
-![GitHub Last Commit](https://img.shields.io/github/last-commit/Ddemon26/TCS-Event-Bus)
+![GitHub Forks](https://img.shields.io/github/forks/Ddemon26/TCS-Event-Bus)
+![GitHub Contributors](https://img.shields.io/github/contributors/Ddemon26/TCS-Event-Bus)
+![GitHub Stars](https://img.shields.io/github/stars/Ddemon26/TCS-Event-Bus)
+![GitHub Repo Size](https://img.shields.io/github/repo-size/Ddemon26/TCS-Event-Bus)
 
-![GitHub License](https://img.shields.io/github/license/Ddemon26/TCS-Event-Bus)
-![Static Badge](https://img.shields.io/badge/Noobs-0-blue)
+## Overview
 
-✨ **TCS Event Bus** is a Unity tool designed to facilitate event-driven programming by providing a robust event bus system. It allows for easy registration, deregistration, and raising of events, making it simple to manage event-driven logic in your Unity projects.
+The **TCS Event Bus** is a robust, event-driven system designed to handle inter-component communication in C# and Unity environments. It enables decoupled communication by allowing components to react to events without knowing about each other, promoting modular, maintainable code.
 
-![Demo GIF](https://media.giphy.com/media/l4Ep6KDbnTvdhGMP6/giphy.gif)
+The Event Bus allows the creation and dispatching of events asynchronously and with performance optimizations, ensuring scalability.
 
-## 📜 Table of Contents
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Customization](#customization)
-- [Contributing](#contributing)
-- [License](#license)
+## Features
 
-## ✨ Features
+- **Decoupled Communication**: Facilitate communication between components with minimal dependencies.
+- **High Performance**: Batches event processing for large-scale event handling.
+- **Event Binding**: Easily bind handlers to events with or without arguments.
+- **Extensibility**: Implement custom events using the `IEvent` interface.
+- **Example Implementations**: Provided example scripts for a smooth learning curve.
 
-- **Event Registration**: Easily register and deregister event handlers.
-- **Event Raising**: Raise events and handle them asynchronously.
-- **Batch Processing**: Efficiently process large numbers of event handlers in batches.
-- **Cancellation Support**: Cancel event processing on application quit.
+## Core Files
 
-## 🚀 Getting Started
+- **`EventBus.cs`**: The main class responsible for registering, deregistering, and dispatching events. Includes optimizations for handling large numbers of event bindings.
+- **`EventBinding.cs`**: Manages the binding between events and their handlers, supporting both events with arguments and events without arguments.
+- **`IEvent.cs`**: A simple interface that all custom events must implement.
+- **`SampleEvents.cs`**: Defines example events such as `TestEvent` and `PlayerEvent` for demonstration purposes.
 
-Follow these steps to start using the **TCS Event Bus**:
+## Getting Started
 
-1. **Install Dependencies**: Ensure that [Odin Inspector](https://odininspector.com/) is installed, as it is required for custom editor features.
+### 1. Install
 
-2. **Open the Event Bus**: In Unity, navigate to `Tools > Event Bus` to open the tool's editor window.
+To install the Event Bus in your project, copy the contents of the `Runtime` folder into your Unity or C# project.
 
-3. **Initialize Systems**: Set up the event bus system in your game scene.
+### 2. Define a Custom Event
 
-4. **Register Events**: Use the provided scripts to register and handle events.
+Custom events need to implement the `IEvent` interface. Here's how to define a simple event:
 
-## 🔧 Installation
+```csharp
+public struct MyCustomEvent : IEvent
+{
+    public string Data;
 
-1. Clone or download this repository.
-2. Add the folder to the `Assets` directory in your Unity project.
-3. Install [Odin Inspector](https://odininspector.com/).
-4. Open the Unity Editor and access the Event Bus through the `Tools` menu.
+    public MyCustomEvent(string data)
+    {
+        Data = data;
+    }
+}
+```
 
-## 🛠️ Usage
+### 3. Register an Event Handler
 
-1. **Event Registration**: Use the `EventBus<T>` class to register and deregister event handlers.
-2. **Event Raising**: Use the `Raise` method in the `EventBus<T>` class to raise events.
-3. **Batch Processing**: The event bus automatically processes large numbers of event handlers in batches for efficiency.
-4. **Cancellation Support**: The event bus supports cancellation of event processing on application quit.
+You can register event handlers that will be triggered when a specific event is raised. Here’s an example of registering a handler for a `MyCustomEvent`:
 
-## ⚙️ Customization
+```csharp
+EventBus<MyCustomEvent>.Register(new EventBinding<MyCustomEvent>(
+    onEvent: OnMyCustomEvent
+));
 
-- **Custom Event Types**: Define new event types by implementing the `IEvent` interface.
-- **Batch Size**: Adjust the batch size for event processing in the `EventBus<T>` class.
-- **Cleanup Threshold**: Customize the cleanup threshold for pending removals in the `EventBus<T>` class.
+private void OnMyCustomEvent(MyCustomEvent e)
+{
+    Debug.Log($"Received event with data: {e.Data}");
+}
+```
 
-## 🤝 Contributing
+### 4. Raise an Event
 
-Contributions are welcome! To contribute:
+To raise an event and notify all registered handlers:
 
-1. Fork the repository.
-2. Create a new feature branch (`git checkout -b feature/NewFeature`).
-3. Make your changes and commit (`git commit -m 'Add new feature'`).
-4. Push to the branch (`git push origin feature/NewFeature`).
-5. Open a pull request.
+```csharp
+EventBus<MyCustomEvent>.Raise(new MyCustomEvent("Hello from EventBus!"));
+```
 
-## 📄 License
+### 5. Clear Event Bindings
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+To clear all handlers for a specific event:
+
+```csharp
+EventBus<MyCustomEvent>.Clear();
+```
+
+### 6. Example with Predefined Events
+
+The system includes predefined events, such as `PlayerEvent`, which includes player health and mana:
+
+```csharp
+EventBus<PlayerEvent>.Register(new EventBinding<PlayerEvent>(
+    onEvent: OnPlayerEvent
+));
+
+private void OnPlayerEvent(PlayerEvent playerEvent)
+{
+    Debug.Log($"Player Health: {playerEvent.Health}, Mana: {playerEvent.Mana}");
+}
+
+EventBus<PlayerEvent>.Raise(new PlayerEvent(health: 100, mana: 50));
+```
+
+## Benchmarks
+
+The repository includes a benchmarking tool (`EventBusBenchmark.cs`) to test the performance of the event system under various loads. You can run these benchmarks to ensure the system fits your performance needs.
+
+```csharp
+var benchmark = new EventBusBenchmark();
+benchmark.Run();
+```
+
+## Contributing
+
+We welcome contributions to the TCS Event Bus! Please feel free to open issues, submit pull requests, and join our community discussions on [Discord](https://discord.gg/knwtcq3N2a).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for more details.
