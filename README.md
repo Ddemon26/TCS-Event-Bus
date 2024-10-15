@@ -1,103 +1,117 @@
 # TCS Event Bus
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/Ddemon26/TCS-Event-Bus)
-![GitHub](https://img.shields.io/github/license/Ddemon26/TCS-Event-Bus)
-![GitHub issues](https://img.shields.io/github/issues/Ddemon26/TCS-Event-Bus)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/Ddemon26/TCS-Event-Bus)
-![GitHub last commit](https://img.shields.io/github/last-commit/Ddemon26/TCS-Event-Bus)
+[![Join our Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?logo=discord&logoColor=white)](https://discord.gg/knwtcq3N2a)
+![Discord](https://img.shields.io/discord/1047781241010794506)
+
+![GitHub Forks](https://img.shields.io/github/forks/Ddemon26/TCS-Event-Bus)
+![GitHub Contributors](https://img.shields.io/github/contributors/Ddemon26/TCS-Event-Bus)
+![GitHub Stars](https://img.shields.io/github/stars/Ddemon26/TCS-Event-Bus)
+![GitHub Repo Size](https://img.shields.io/github/repo-size/Ddemon26/TCS-Event-Bus)
 
 ## Overview
 
-**TCS Event Bus** is a sophisticated and highly flexible event bus framework, implemented in **C#** for **Unity** environments, designed to facilitate efficient event management across different modules of a Unity project using the **publish-subscribe** paradigm. This package aims to significantly improve the decoupling of components, thereby reducing rigid dependencies and enhancing overall system modularity.
+The **TCS Event Bus** is a robust, event-driven system designed to handle inter-component communication in C# and Unity environments. It enables decoupled communication by allowing components to react to events without knowing about each other, promoting modular, maintainable code.
 
-The **TCS Event Bus** empowers developers to broadcast messages and register for event notifications in an entirely decoupled manner, eliminating the need for direct, hard-coded references among objects. Such capabilities render it particularly advantageous for large-scale Unity applications where scalability and maintainability are paramount.
+The Event Bus allows the creation and dispatching of events asynchronously and with performance optimizations, ensuring scalability.
 
 ## Features
 
-- **Decoupled Communication**: Facilitates a robust communication architecture that obviates direct object references, promoting a more modular system design.
-- **Minimalist & Intuitive API**: Offers a streamlined, developer-friendly interface that minimizes the learning curve and accelerates the integration process.
-- **Scalability**: Designed to support both small and large-scale projects with optimal performance, ensuring negligible system overhead.
-- **Unity Integration**: Seamlessly integrates with Unity's Assembly Definition files, allowing precise separation of runtime and testing assemblies, thereby optimizing project organization and performance.
+- **Decoupled Communication**: Facilitate communication between components with minimal dependencies.
+- **High Performance**: Batches event processing for large-scale event handling.
+- **Event Binding**: Easily bind handlers to events with or without arguments.
+- **Extensibility**: Implement custom events using the `IEvent` interface.
+- **Example Implementations**: Provided example scripts for a smooth learning curve.
+
+## Core Files
+
+- **`EventBus.cs`**: The main class responsible for registering, deregistering, and dispatching events. Includes optimizations for handling large numbers of event bindings.
+- **`EventBinding.cs`**: Manages the binding between events and their handlers, supporting both events with arguments and events without arguments.
+- **`IEvent.cs`**: A simple interface that all custom events must implement.
+- **`SampleEvents.cs`**: Defines example events such as `TestEvent` and `PlayerEvent` for demonstration purposes.
 
 ## Getting Started
 
-### Prerequisites
+### 1. Install
 
-- **Unity 2019.4 or later**: The package is compatible with Unity version 2019.4 and subsequent versions.
-- **.NET Standard 2.0**: Ensure that your Unity project targets **.NET Standard 2.0** or a later version.
+To install the Event Bus in your project, copy the contents of the `Runtime` folder into your Unity or C# project.
 
-### Installation
+### 2. Define a Custom Event
 
-To incorporate **TCS Event Bus** into your Unity project, perform the following steps:
+Custom events need to implement the `IEvent` interface. Here's how to define a simple event:
 
-1. Clone the repository or download it as a ZIP archive.
-2. Extract and place the **TCS Event Bus** folder within your Unity project's `Assets/` directory.
-3. Confirm that the **TCS.EventBus.asmdef** is appropriately referenced within your project's assembly definitions to maintain modular integrity.
+```csharp
+public struct MyCustomEvent : IEvent
+{
+    public string Data;
 
-Alternatively, utilize Unity's Package Manager to include this repository as a dependency, particularly if it is hosted on GitHub.
+    public MyCustomEvent(string data)
+    {
+        Data = data;
+    }
+}
+```
 
-### Usage
+### 3. Register an Event Handler
 
-1. **Define an Event**: Implement the `IEvent` interface to define a new event type.
+You can register event handlers that will be triggered when a specific event is raised. Here’s an example of registering a handler for a `MyCustomEvent`:
 
-   ```csharp
-   public class PlayerScoredEvent : IEvent
-   {
-       public int PlayerID { get; set; }
-       public int Score { get; set; }
-   }
-   ```
+```csharp
+EventBus<MyCustomEvent>.Register(new EventBinding<MyCustomEvent>(
+    onEvent: OnMyCustomEvent
+));
 
-2. **Subscribe to an Event**: Utilize the `EventBus` to subscribe to a specific event type.
+private void OnMyCustomEvent(MyCustomEvent e)
+{
+    Debug.Log($"Received event with data: {e.Data}");
+}
+```
 
-   ```csharp
-   EventBus.Subscribe<PlayerScoredEvent>(OnPlayerScored);
+### 4. Raise an Event
 
-   private void OnPlayerScored(PlayerScoredEvent e)
-   {
-       Debug.Log($"Player {e.PlayerID} scored {e.Score} points!");
-   }
-   ```
+To raise an event and notify all registered handlers:
 
-3. **Publish an Event**: Use the `EventBus` to publish an instance of the event.
+```csharp
+EventBus<MyCustomEvent>.Raise(new MyCustomEvent("Hello from EventBus!"));
+```
 
-   ```csharp
-   var scoreEvent = new PlayerScoredEvent { PlayerID = 1, Score = 10 };
-   EventBus.Publish(scoreEvent);
-   ```
+### 5. Clear Event Bindings
 
-### Examples
+To clear all handlers for a specific event:
 
-Concrete examples illustrating the usage of **TCS Event Bus** are available in the **Test/EventBusExample.cs** file. This file demonstrates a variety of use cases, including event subscription and event publication patterns.
+```csharp
+EventBus<MyCustomEvent>.Clear();
+```
 
-## Testing
+### 6. Example with Predefined Events
 
-The **Test** directory contains comprehensive unit and benchmark tests aimed at verifying the reliability and efficiency of the event bus framework. Specifically, `EventBusBenchmark.cs` facilitates performance assessment under different load conditions, thereby offering insights into the event bus's efficiency.
+The system includes predefined events, such as `PlayerEvent`, which includes player health and mana:
 
-To execute the tests:
+```csharp
+EventBus<PlayerEvent>.Register(new EventBinding<PlayerEvent>(
+    onEvent: OnPlayerEvent
+));
 
-1. Open the Unity Test Runner via `Window > General > Test Runner`.
-2. Ensure that both **PlayMode** and **EditMode** tests are configured appropriately.
-3. Run all available tests to validate the robustness and stability of the **TCS Event Bus** implementation.
+private void OnPlayerEvent(PlayerEvent playerEvent)
+{
+    Debug.Log($"Player Health: {playerEvent.Health}, Mana: {playerEvent.Mana}");
+}
+
+EventBus<PlayerEvent>.Raise(new PlayerEvent(health: 100, mana: 50));
+```
+
+## Benchmarks
+
+The repository includes a benchmarking tool (`EventBusBenchmark.cs`) to test the performance of the event system under various loads. You can run these benchmarks to ensure the system fits your performance needs.
+
+```csharp
+var benchmark = new EventBusBenchmark();
+benchmark.Run();
+```
 
 ## Contributing
 
-Contributions are highly encouraged! If you have recommendations for new features or identify a bug, please create an issue or submit a pull request.
-
-### Contribution Guidelines
-
-- Ensure that all new contributions are thoroughly covered by appropriate unit tests.
-- Adhere to the existing code conventions and organizational structure.
-- Document all changes in the **CHANGELOG.md** to maintain transparency and version history.
+We welcome contributions to the TCS Event Bus! Please feel free to open issues, submit pull requests, and join our community discussions on [Discord](https://discord.gg/knwtcq3N2a).
 
 ## License
 
-This project is distributed under the **MIT License**. For more information, refer to the [LICENSE](./LICENSE) file.
-
-## Contact
-
-For inquiries or feedback, you are encouraged to open an issue on GitHub or reach out directly to the repository maintainer.
-
----
-
-We appreciate your interest in **TCS Event Bus**! We are confident that it will enhance the modularity and maintainability of your Unity projects.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for more details.
